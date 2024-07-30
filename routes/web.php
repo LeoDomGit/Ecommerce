@@ -14,3 +14,6 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', [UserController::class,'register']);
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web']], function () {
+    \UniSharp\LaravelFilemanager\Lfm::routes();
+});
