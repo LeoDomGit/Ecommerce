@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ChatController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +19,8 @@ Route::get('/register', [UserController::class,'register']);
 Route::get('/', [UserController::class,'login']);
 Route::post('/checkLogin', [UserController::class,'checkLogin']);
 Route::get('/account',[UserController::class,'account']);
+
+Route::resource('chat', ChatController::class);
 
 
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web']], function () {
