@@ -13,7 +13,13 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::get('/', [UserController::class,'register']);
+Route::resource('user', UserController::class);
+Route::get('/register', [UserController::class,'register']);
+Route::get('/', [UserController::class,'login']);
+Route::post('/checkLogin', [UserController::class,'checkLogin']);
+Route::get('/account',[UserController::class,'account']);
+
+
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web']], function () {
     \UniSharp\LaravelFilemanager\Lfm::routes();
 });

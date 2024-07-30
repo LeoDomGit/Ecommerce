@@ -22,17 +22,11 @@ export default function Register() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     var email= data.get('email');
-    var  name= data.get('name');
     var password= data.get('password');
     if(email==''){
         notyf.open({
             type: "error",
             message: "Email is required",
-        });
-    }else if(name==''){
-        notyf.open({
-            type: "error",
-            message: "Name is required",
         });
     }else if(password==''){
         notyf.open({
@@ -40,15 +34,14 @@ export default function Register() {
             message: "Password is required",
         });
     }else{
-        axios.post('/user',{
-            name:name,
+        axios.post('/checkLogin',{
             email:email,
             password:password
         }).then((res)=>{
             if(res.data.check==true){
                 notyf.open({
                     type: "success",
-                    message: "Regist successfully",
+                    message: "Login successfully",
                 });
             }else if(res.data.check==false){
                 if(res.data.msg){
@@ -101,21 +94,10 @@ export default function Register() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-           REGISTER
+           LOGIN
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  autoComplete="given-name"
-                  name="name"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Full name"
-                  autoFocus
-                />
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
@@ -144,12 +126,12 @@ export default function Register() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              REGISTER
+              LOGIN
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account ? Login
+                <Link href="/register" variant="body2">
+                  Register
                 </Link>
               </Grid>
             </Grid>
