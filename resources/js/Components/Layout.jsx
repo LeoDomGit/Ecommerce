@@ -29,7 +29,7 @@ function Layout({ children }) {
             <a href={'/admin/users'}> <MenuItem icon={<CategoryIcon />}>Tài khoản</MenuItem></a>
             </SubMenu>
             <SubMenu label="Bài viết" icon={<BrandingWatermarkIcon />}>
-            <a href={'/admin/collection'}> <MenuItem icon={<CategoryIcon />}>Loại bài viết</MenuItem></a>
+            <a href={'/admin/collections'}> <MenuItem icon={<CategoryIcon />}>Loại bài viết</MenuItem></a>
             <a href={'/admin/posts'}> <MenuItem icon={<CategoryIcon />}>Bài viết</MenuItem></a>
             </SubMenu>
            <a href={'/logout'}> <MenuItem icon={<LogoutIcon />}>Log out</MenuItem></a>

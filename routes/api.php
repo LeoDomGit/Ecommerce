@@ -20,5 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/post/{slug}',[PostController::class,'store']);
+Route::post('/post/{slug}',[PostController::class,'store1']);
 Route::get('/collections',[PostCollectionController::class,'api_home']);

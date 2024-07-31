@@ -16,6 +16,7 @@ use  App\Http\Controllers\Admin\PostController;
 */
 
 Route::resource('/admin/collections',PostCollectionController::class);
+Route::resource('/admin/posts',PostController::class);
 Route::get('/crawler',[PostController::class,'crawl']);
 
 

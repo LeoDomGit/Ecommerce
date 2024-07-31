@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Collection;
+use App\Models\PostCate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
@@ -16,15 +16,15 @@ class PostCollectionController extends Controller
      */
     public function index()
     {
-        $data=Collection::all();
-        return Inertia::render('Collections/Index',['postcates'=>$data]);
+        $data=PostCate::all();
+        return Inertia::render('PostCates/Index',['postcates'=>$data]);
     }
     /**
      * Show the form for creating a new resource.
      */
     public function getAll()
     {
-        return Collection::all();
+        return PostCate::all();
     }
     /**
      * Show the form for creating a new resource.
@@ -48,14 +48,14 @@ class PostCollectionController extends Controller
         $data = $request->all();
         $data['created_at']= now();
         $data['slug']= Str::slug($request->title);
-        Collection::create($data);
+        PostCate::create($data);
         return response()->json(['check'=>true,'data'=>$this->getAll()]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Collection $collection)
+    public function show(PostCate $PostCate)
     {
         //
     }
@@ -63,7 +63,7 @@ class PostCollectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Collection $collection)
+    public function edit(PostCate $PostCate)
     {
         //
     }
@@ -73,14 +73,8 @@ class PostCollectionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|unique:collections,title',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['check' => false, 'msg' => $validator->errors()->first()]);
-        }
-        $collection = Collection::find($id);
-        if(!$collection){
+        $PostCate = PostCate::find($id);
+        if(!$PostCate){
             return response()->json(['check'=>true,'msg'=>'Không tìm thấy mã']);
         }
         $data=$request->all();
@@ -88,7 +82,7 @@ class PostCollectionController extends Controller
             $data['slug']= Str::slug($request->title);
         }
         $data['updated_at']= now();
-        Collection::where('id',$id)->update($data);
+        PostCate::where('id',$id)->update($data);
         return response()->json(['check'=>true,'data'=>$this->getAll()]);
 
     }
@@ -98,11 +92,11 @@ class PostCollectionController extends Controller
      */
     public function destroy($id)
     {
-        $collection = Collection::find($id);
-        if(!$collection){
+        $PostCate = PostCate::find($id);
+        if(!$PostCate){
             return response()->json(['check'=>true,'msg'=>'Không tìm thấy mã']);
         }
-        Collection::where('id',$id)->delete();
+        PostCate::where('id',$id)->delete();
         return response()->json(['check'=>true,'data'=>$this->getAll()]);
     }
 }
