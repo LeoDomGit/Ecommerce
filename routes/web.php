@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use  App\Http\Controllers\Admin\PostCollectionController;
+use  App\Http\Controllers\Admin\PostController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +15,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-   return Inertia::render('Home');
-});
+Route::resource('/admin/collections',PostCollectionController::class);
+Route::get('/crawler',[PostController::class,'crawl']);
+
+

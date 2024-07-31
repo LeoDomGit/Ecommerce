@@ -11,13 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('collections', function (Blueprint $table) {
+        Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title',255);
             $table->string('slug',255);
+            $table->string('summary',255)->nullable();
+            $table->string('image',255);
+            $table->longText('content');
             $table->boolean('status')->default(0);
             $table->boolean('highlighted')->default(0);
+            $table->unsignedBigInteger('id_collection');
             $table->timestamps();
+            $table->foreign('id_collection')->references('id')->on('collections');
         });
     }
 
@@ -26,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('collections');
+        Schema::dropIfExists('posts');
     }
 };
