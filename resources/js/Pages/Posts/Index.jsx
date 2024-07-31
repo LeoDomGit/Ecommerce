@@ -59,10 +59,10 @@ function Index({ cates, products, posts }) {
     const [categories, setCategories] = useState(cates);
     const [files, setFiles] = React.useState([]);
     const [idProducts, setIdProducts] = useState([]);
-    const [data,setData]= useState(posts);
-    const [dataproducts,setDataProduct]= useState(products);
+    const [data, setData] = useState(posts);
+    const [dataproducts, setDataProduct] = useState(products);
     const [idCate, setIdCate] = useState(0);
-    const [idPost,setIdPost]= useState(null);
+    const [idPost, setIdPost] = useState(null);
     const ITEM_HEIGHT = 48;
     const ITEM_PADDING_TOP = 8;
     const MenuProps = {
@@ -73,132 +73,158 @@ function Index({ cates, products, posts }) {
             },
         },
     };
-    const handleEditClick = (item)=>{
-		setTitle(item.title)
-		setSummary(item.summary);
-		setFiles([]);
-		setContent(item.content);
-		setIdCate(item.id_collection);
-        setIdPost(item.id);
-        axios.post('/admin/posts/'+item.id).then((res)=>{
-            setIdProducts(res.data);
+    const deletePost = (idPost)=>{
+        axios.delete('/admin/posts/'+idPost).then((res)=>{
+            if(res.data.check==true){
+                notyf.open({
+                    type: "success",
+                    message: 'Đã xóa thành công',
+                });
+                setTimeout(()=>{
+                    window.location.reload();
+                },3000)
+            }
         })
-		setCreate(true);
-	}
-    const handleParentChange1 = (id,value)=>{
-        axios.put("/admin/posts/" + id, {
-            id_collection:value
-        }).then((res) => {
-            if (res.data.check == false) {
-                if (res.data.msg) {
+    }
+
+    const handleEditClick = (item) => {
+        setTitle(item.title);
+        setSummary(item.summary);
+        setFiles([]);
+        setContent(item.content);
+        setIdCate(item.id_collection);
+        setIdPost(item.id);
+        axios.post("/admin/posts/" + item.id).then((res) => {
+            setIdProducts(res.data);
+        });
+        setCreate(true);
+    };
+    const handleParentChange1 = (id, value) => {
+        axios
+            .put("/admin/posts/" + id, {
+                id_collection: value,
+            })
+            .then((res) => {
+                if (res.data.check == false) {
+                    if (res.data.msg) {
+                        notyf.open({
+                            type: "error",
+                            message: res.data.msg,
+                        });
+                    }
+                } else if (res.data.check == true) {
+                    notyf.open({
+                        type: "success",
+                        message: "Chuyển nhóm danh mục thành công",
+                    });
+                    setData(res.data.data);
+                    console.log(res.data.data);
+                }
+            });
+    };
+
+    const handleCellEditStop = (id, field, value) => {
+        if (value != "") {
+            axios.put(`/admin/posts/${id}`, { [field]: value }).then((res) => {
+                if (res.data.check == true) {
+                    notyf.open({
+                        type: "success",
+                        message: "Chỉnh sửa dịch vụ thành công",
+                    });
+                    setData(res.data.data);
+                } else if (res.data.check == false) {
                     notyf.open({
                         type: "error",
                         message: res.data.msg,
                     });
                 }
-            } else if (res.data.check == true) {
-                notyf.open({
-                    type: "success",
-                    message: "Chuyển nhóm danh mục thành công",
-                });
-                setData(res.data.data);
-                console.log(res.data.data);
-            }
-        });
-      }
-
-      const handleCellEditStop = (id, field, value) => {
-        if(value!=''){
-            axios
-            .put(
-              `/admin/posts/${id}`,
-              { [field]: value },
-            )
-            .then((res) => {
-              if (res.data.check == true) {
-                notyf.open({
-                  type: "success",
-                  message: "Chỉnh sửa dịch vụ thành công",
-                });
-                setData(res.data.data);
-
-              } else if (res.data.check == false) {
-                notyf.open({
-                  type: "error",
-                  message: res.data.msg,
-                });
-              }
             });
         }
-
-      };
+    };
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'title', headerName: 'Tiêu đề bài viết', width: 200,editable:true },
-        { field: 'slug', headerName: 'Slug', width: 200,editable:false },
-        { field: 'summary', headerName: 'Tóm tắt', width: 300,editable:true },
+        { field: "id", headerName: "ID", width: 70 },
         {
-          field: 'id_collection', headerName: "Danh mục bài viết", width: 200, renderCell: (params) => (
-            <Select
-              defaultValue={params.value}
-              className='w-100'
-              onChange={(e) => handleParentChange1(params.id, e.target.value)}
-            >
-              <MenuItem value={null}>None</MenuItem>
-              {categories.map((parent) => (
-                <MenuItem key={parent.id} value={parent.id}>{parent.title}</MenuItem>
-              ))}
-            </Select>
-          )
+            field: "title",
+            headerName: "Tiêu đề bài viết",
+            width: 200,
+            editable: true,
+        },
+        { field: "slug", headerName: "Slug", width: 200, editable: false },
+        { field: "summary", headerName: "Tóm tắt", width: 300, editable: true },
+        {
+            field: "id_collection",
+            headerName: "Danh mục bài viết",
+            width: 200,
+            renderCell: (params) => (
+                <Select
+                    defaultValue={params.value}
+                    className="w-100"
+                    onChange={(e) =>
+                        handleParentChange1(params.id, e.target.value)
+                    }
+                >
+                    <MenuItem value={null}>None</MenuItem>
+                    {categories.map((parent) => (
+                        <MenuItem key={parent.id} value={parent.id}>
+                            {parent.title}
+                        </MenuItem>
+                    ))}
+                </Select>
+            ),
         },
         {
-          field: 'status',
-          headerName: 'Status',
-          width: 200,
-          renderCell: (params) => (
-            <Switch
-              checked={params.value == 1}
-              onChange={(e) => switchService(params, e.target.checked ? 1 : 0)}
-              inputProps={{ "aria-label": "controlled" }}
-            />
-          ),
+            field: "status",
+            headerName: "Status",
+            width: 200,
+            renderCell: (params) => (
+                <Switch
+                    checked={params.value == 1}
+                    onChange={(e) =>
+                        switchService(params, e.target.checked ? 1 : 0)
+                    }
+                    inputProps={{ "aria-label": "controlled" }}
+                />
+            ),
         },
         {
-          field: 'highlight',
-          headerName: 'Highlight',
-          width: 200,
-          renderCell: (params) => (
-            <Switch
-              checked={params.value == 1}
-              onChange={(e) => switchService(params, e.target.checked ? 1 : 0)}
-              inputProps={{ "aria-label": "controlled" }}
-            />
-          ),
+            field: "highlight",
+            headerName: "Highlight",
+            width: 200,
+            renderCell: (params) => (
+                <Switch
+                    checked={params.value == 1}
+                    onChange={(e) =>
+                        switchService(params, e.target.checked ? 1 : 0)
+                    }
+                    inputProps={{ "aria-label": "controlled" }}
+                />
+            ),
         },
         {
             headerName: "Chi tiết",
             width: 70,
             renderCell: (params) => (
-                <a href={'#'} onClick={(e)=>handleEditClick(params.row)} className="btn btn-sm btn-warning">Edit</a>
+                <a
+                    href={"#"}
+                    onClick={(e) => handleEditClick(params.row)}
+                    className="btn btn-sm btn-warning"
+                >
+                    Edit
+                </a>
             ),
         },
-      ];
-    const resetCreate=()=>{
-        setTitle('');
-        setSummary('')
-        setFiles([])
-        setTitle('')
-        setContent('');
+    ];
+    const resetCreate = () => {
+        setTitle("");
+        setSummary("");
+        setFiles([]);
+        setTitle("");
+        setContent("");
         setIdCate(0);
         setCreate(true);
-    }
-    const submitEditPost= ()=>{
-        if (
-            title == "" ||
-            summary == "" ||
-            idCate == 0 ||
-            content == ""
-        ) {
+    };
+    const submitEditPost = () => {
+        if (title == "" || summary == "" || idCate == 0 || content == "") {
             notyf.open({
                 type: "error",
                 message: "Thiếu nội dung bài viết",
@@ -208,14 +234,14 @@ function Index({ cates, products, posts }) {
             formData.append("title", title);
             formData.append("summary", summary);
             formData.append("content", content);
-            if(files.length>0){
+            if (files.length > 0) {
                 formData.append("file", files[0].file);
             }
             formData.append("id_collection", idCate);
             idProducts.forEach((el) => {
                 formData.append("products[]", Number(el));
             });
-            axios.post("/admin/update-post/"+idPost, formData).then((res) => {
+            axios.post("/admin/update-post/" + idPost, formData).then((res) => {
                 if (res.data.check == true) {
                     notyf.open({
                         type: "success",
@@ -223,7 +249,7 @@ function Index({ cates, products, posts }) {
                     });
                     resetCreate();
                     setCreate(false);
-                    setData(res.data.data)
+                    setData(res.data.data);
                 } else {
                     if (res.data.msg) {
                         notyf.open({
@@ -234,7 +260,7 @@ function Index({ cates, products, posts }) {
                 }
             });
         }
-    }
+    };
     const handleChange = (event) => {
         const {
             target: { value },
@@ -272,7 +298,7 @@ function Index({ cates, products, posts }) {
                     });
                     resetCreate();
                     setCreate(false);
-                    setData(res.data.data)
+                    setData(res.data.data);
                 } else {
                     if (res.data.msg) {
                         notyf.open({
@@ -287,12 +313,9 @@ function Index({ cates, products, posts }) {
     function switchService(params, value) {
         var field = params.field;
         axios
-            .put(
-                "/admin/posts/" + params.id,
-                {
-                  [field]: value,
-                }
-            )
+            .put("/admin/posts/" + params.id, {
+                [field]: value,
+            })
             .then((res) => {
                 if (res.data.check == false) {
                     if (res.data.msg) {
@@ -319,10 +342,20 @@ function Index({ cates, products, posts }) {
                 <div className="row">
                     <div className="col-md-3">
                         {create && (
-                            <button className="btn btn-secondary" onClick={(e)=>setCreate(false)}>Hủy</button>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={(e) => setCreate(false)}
+                            >
+                                Hủy
+                            </button>
                         )}
-                        {!create&& (
-                        <button className="btn btn-primary" onClick={(e)=>resetCreate()}>Thêm</button>
+                        {!create && (
+                            <button
+                                className="btn btn-primary"
+                                onClick={(e) => resetCreate()}
+                            >
+                                Thêm
+                            </button>
                         )}
                     </div>
                 </div>
@@ -413,29 +446,44 @@ function Index({ cates, products, posts }) {
                                     </div>
                                     <div className="row">
                                         <div className="col-md">
-                                            <CKEditor value={content} onBlur={setContent} />
+                                            <CKEditor
+                                                value={content}
+                                                onBlur={setContent}
+                                            />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="card-footer">
                                     <div className="row">
                                         <div className="col-md text-end">
-                                      {!idPost && (
-                                          <button
-                                          onClick={(e) => submitPost()}
-                                          className="btn btn-primary"
+                                            {!idPost && (
+                                                <button
+                                                    onClick={(e) =>
+                                                        submitPost()
+                                                    }
+                                                    className="btn btn-primary"
+                                                >
+                                                    Thêm
+                                                </button>
+                                            )}
+                                            {idPost && (
+                                                <>
+                                                    <button
+                                                        onClick={(e) =>
+                                                            submitEditPost()
+                                                        }
+                                                        className="btn btn-primary"
+                                                    >
+                                                        Sửa
+                                                    </button>
+                                                    <button
+                                          onClick={(e) => deletePost(idPost)}
+                                          className="btn btn-danger ms-3"
                                       >
-                                          Thêm
+                                          Xóa
                                       </button>
-                                      )}
-                                      {idPost && (
-                                          <button
-                                          onClick={(e) => submitEditPost()}
-                                          className="btn btn-primary"
-                                      >
-                                          Sửa
-                                      </button>
-                                      )}
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -444,31 +492,31 @@ function Index({ cates, products, posts }) {
                     </div>
                 )}
                 {!create && (
-                <div className="row mt-3" >
-                   <div className="col-md">
-                   <DataGrid
-                  rows={data}
-                  columns={columns}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5]}
-                  checkboxSelection
-                  disableRowSelectionOnClick
-                  onCellEditStop={(params, e) =>
-                    handleCellEditStop(
-                      params.row.id,
-                      params.field,
-                      e.target.value
-                    )
-                  }
-                />
-                   </div>
-                </div>
+                    <div className="row mt-3">
+                        <div className="col-md">
+                            <DataGrid
+                                rows={data}
+                                columns={columns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: 5,
+                                        },
+                                    },
+                                }}
+                                pageSizeOptions={[5]}
+                                checkboxSelection
+                                disableRowSelectionOnClick
+                                onCellEditStop={(params, e) =>
+                                    handleCellEditStop(
+                                        params.row.id,
+                                        params.field,
+                                        e.target.value
+                                    )
+                                }
+                            />
+                        </div>
+                    </div>
                 )}
             </>
         </Layout>

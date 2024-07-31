@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\PostCate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -80,7 +81,7 @@ class PostController extends Controller
         $file=$request->file('file');
         $imageName = $file->getClientOriginalName();
         $extractTo = storage_path('app/public/posts/');
-        $data['image']=$imageName;
+        $data['image'] = '/storage/posts/' . $imageName;
         $file->move($extractTo, $imageName);
         $data['created_at']=now();
         $id=Post::insertGetId($data);
@@ -119,9 +120,8 @@ class PostController extends Controller
             $file = $request->file('file');
             $imageName = $file->getClientOriginalName();
             $extractTo = storage_path('app/public/posts/');
-            $data['image'] = $imageName;
+            $data['image'] = '/storage/posts/' . $imageName;
             $file->move($extractTo, $imageName);
-
             $oldImage = Post::where('id', $id)->value('image');
             $oldFilePath = "public/posts/{$oldImage}";
             Storage::delete($oldFilePath);
@@ -139,12 +139,11 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post,$id)
+    public function destroy($id)
     {
         $oldImage = Post::where('id', $id)->value('image');
-            $oldFilePath = "public/posts/{$oldImage}";
-            Storage::delete($oldFilePath);
-        $post->delete();
+            Storage::delete($oldImage);
+        Post::where('id', $id)->delete();
         $posts = Post::with('cates')->get();
         return response()->json(['check' => true, 'data' => $posts]);
     }

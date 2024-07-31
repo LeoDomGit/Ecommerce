@@ -22,3 +22,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/post/{slug}',[PostController::class,'store1']);
 Route::get('/collections',[PostCollectionController::class,'api_home']);
+
+Route::prefix('posts')->group(function () {
+    Route::get('/',[PostController::class,'api_post']);
+    Route::get('/highlight',[PostController::class,'api_highlight']);
+    Route::get('/{id}',[PostController::class,'single_post']);
+});
