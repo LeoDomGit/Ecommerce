@@ -148,32 +148,28 @@ class PostController extends Controller
         return response()->json(['check' => true, 'data' => $posts]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function api_highlight(Post $post){
-        $result=Post::with('cates')
-        ->highlight()
-        ->orderBy('id', 'desc')
-        ->first();
-        return response()->json($result);
-    }
+      // =========================================
+      public function api_post()
+      {
+          $posts = Post::where('status', 1)->orderBy('created_at', 'desc')->get();
+          $new_posts = Post::where('status', 1)->orderBy('id', 'desc')->take(4)->get();
+          $postcates = PostCate::where('status', 1)->select('id', 'slug', 'title')->get();
+          return response()->json(['posts' => $posts, 'new_posts' => $new_posts, 'postcates' => $postcates]);
+      }
+      // =========================================
+      public function api_highlight()
+      {
+          $posts = Post::with('cates')->where('status', 1)->where('highlight', 1)->orderBy('created_at', 'asc')->get();
+          return response()->json($posts);
+      }
 
-    public function api_get(Post $post){
-        $result=Post::with('cates')->active()->orderBy('id','desc')->paginate(4);
-        return response()->json($result);
-    }
-    public function api_single(Post $post,$id){
-        $result=Post::with('cates')->active()->where('slug',$id)->first();
-        $id_collection= $result->id_collection;
-        $posts = Post::with('cates')->active()->where('id_collection',$id_collection)->get();
-        $id_post=$result->id;
-        $products = Products::join('links','links.id_link','=','products.id')
-                ->join('gallery','products.id','=','gallery.id_parent')
-                ->where('links.id_parent',$id_post)->where('products.status',1)
-                ->where('gallery.status',1)
-                ->select('products.*','gallery.image as image')->get();
-        return response()->json(['post'=>$result,'products'=>$products ,'relative'=>$posts]);
+      // =========================================
 
-    }
+      public function single_post($id)
+      {
+          $posts = Post::where('status', 1)->where('slug', $id)->first();
+          $postcates = PostCate::where('status', 1)->select('id', 'slug', 'title')->get();
+          $new_posts = Post::where('status', 1)->orderBy('id', 'desc')->take(4)->get();
+          return response()->json(['post' => $posts, 'newposts' => $new_posts, 'postcates' => $postcates]);
+      }
 }
